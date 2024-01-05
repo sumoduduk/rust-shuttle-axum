@@ -29,7 +29,7 @@ pub fn populate_data(byte_data: Bytes) -> eyre::Result<Vec<Value>> {
             let budget = j.detail.get("Budget");
             let hourly = j.detail.get("Hourly Range");
 
-            let title_job: Vec<_> = j.title.split("- Upwo").collect();
+            let title_job: Vec<_> = j.title.split("- Upwork").collect();
 
             let mut price = "Unknown".to_string();
 
@@ -49,3 +49,4 @@ pub fn populate_data(byte_data: Bytes) -> eyre::Result<Vec<Value>> {
 
     Ok(list_job)
 }
+
