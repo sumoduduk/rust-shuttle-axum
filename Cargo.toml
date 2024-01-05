@@ -7,7 +7,7 @@ edition = "2021"
 axum = "0.6.20"
 chrono = { version = "0.4.31", features = ["serde"] }
 eyre = "0.6.11"
-reqwest = "0.11.23"
+reqwest = { version = "0.11.23", features = ["json"] }
 rss = "2.0.6"
 scraper = "0.18.1"
 serde = { version = "1.0.194", features = ["derive"] }
