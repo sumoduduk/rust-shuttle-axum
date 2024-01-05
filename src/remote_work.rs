@@ -1,21 +1,20 @@
-use std::collections::HashMap;
+mod begin_opt;
+mod html_parse;
+mod mapped_detail;
+mod parse_xml;
 
+use crate::{
+    error::{internal_error, ResponseError},
+    remote_work::begin_opt::{populate_data, request_bytes},
+    AppState,
+};
 use axum::{
     extract::{Query, State},
     Json,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-
-use crate::{
-    remote_work::begin_opt::{populate_data, request_bytes},
-    AppState,
-};
-
-mod begin_opt;
-mod html_parse;
-mod mapped_detail;
-mod parse_xml;
+use std::collections::HashMap;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct JobPost {
@@ -27,25 +26,18 @@ pub struct JobPost {
     pub posted_timestamp: i64,
 }
 
-#[derive(Deserialize, Debug)]
-pub struct QueryMap {
-    recency: Option<String>,
-    q: Option<String>,
-}
-
 pub async fn get_job(
     Query(query_data): Query<HashMap<String, String>>,
     State(state): State<AppState>,
-) -> Json<Vec<Value>> {
+) -> Result<Json<Vec<Value>>, ResponseError> {
     let uri = &state.uri;
 
-    let bytes_data = request_bytes(uri, query_data).await;
+    let bytes_data = request_bytes(uri, query_data)
+        .await
+        .map_err(internal_error)?;
 
-    match bytes_data {
-        Ok(data) => match populate_data(data) {
-            Ok(arr_data) => HttpResponse::Ok().json(arr_data),
-            _ => HttpResponse::InternalServerError().finish(),
-        },
-        _ => HttpResponse::InternalServerError().finish(),
-    }
+    let data = populate_data(bytes_data).map_err(internal_error)?;
+
+    Ok(Json(data))
 }
+
