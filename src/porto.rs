@@ -1,11 +1,7 @@
 mod notion_contact;
 mod notion_porto;
 
-use axum::{
-    extract::State,
-    routing::{get, post},
-    Json, Router,
-};
+use axum::{extract::State, Json};
 use notion_contact::{convert_to_json, push_notion};
 use notion_porto::get_porto;
 use reqwest::StatusCode;
@@ -78,11 +74,5 @@ pub async fn api_porto(
         }
         Err(err) => Err((StatusCode::NOT_FOUND, err.to_string())),
     }
-}
-
-pub async fn porto_route() -> Router {
-    Router::new()
-        .route("/get_porto", get(api_porto))
-        .route("/contact_form", post(push_contact))
 }
 
