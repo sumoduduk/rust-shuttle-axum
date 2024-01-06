@@ -30,9 +30,16 @@ pub fn mapped_detail(
 
 #[cfg(test)]
 mod tests {
+    use chrono::{DateTime, Utc};
+
     use super::*;
-    use crate::utils::string_to_datetime;
     use std::collections::HashMap;
+
+    fn string_to_datetime(input: &str) -> eyre::Result<DateTime<Utc>> {
+        let date = DateTime::parse_from_rfc2822(input)?.with_timezone(&Utc);
+
+        Ok(date)
+    }
 
     #[test]
     fn test_1_get_detail() {
@@ -261,3 +268,4 @@ mod tests {
     //     assert!(mapped_detail.is_err());
     // }
 }
+
