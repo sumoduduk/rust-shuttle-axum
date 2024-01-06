@@ -3,8 +3,12 @@ mod porto;
 mod remote_work;
 mod utils;
 
-use axum::{extract::FromRef, http::Method, routing::get, Router};
-use porto::porto_route;
+use axum::{
+    http::Method,
+    routing::{get, post},
+    Router,
+};
+use porto::{api_porto, push_contact};
 use remote_work::get_job;
 use shuttle_secrets::SecretStore;
 use tower_http::cors::{Any, CorsLayer};
@@ -47,7 +51,8 @@ async fn main(#[shuttle_secrets::Secrets] secret_store: SecretStore) -> shuttle_
     let router = Router::new()
         .route("/", get(hello_world))
         .route("/search_job", get(get_job))
-        .nest("/porto", porto_route)
+        .route("/porto/get_porto", get(api_porto))
+        .route("/porto/contact_form", post(push_contact))
         .layer(cors)
         .with_state(app_state);
 
